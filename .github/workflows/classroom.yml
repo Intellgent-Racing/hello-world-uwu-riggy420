@@ -1,0 +1,33 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Hello World UwU
+      id: hello-world-uwu
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Hello World UwU
+        setup-command: gcc -o hello.exe main.c
+        command: "./hello.exe"
+        input: ''
+        expected-output: Hello World UwU
+        comparison-method: contains
+        timeout: 10
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        HELLO-WORLD-UWU_RESULTS: "${{steps.hello-world-uwu.outputs.result}}"
+      with:
+        runners: hello-world-uwu
